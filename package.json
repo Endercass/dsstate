@@ -1,7 +1,7 @@
 {
   "name": "dsstate",
   "private": false,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,9 +9,16 @@
     "preview": "vite preview",
     "test": "vitest"
   },
+  "exports": {
+    "import": {
+      "import": "./dist/dsstate.es.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "devDependencies": {
     "typescript": "~5.7.2",
     "vite": "^6.3.1",
+    "vite-plugin-dts": "^4.5.3",
     "vitest": "^3.1.2"
   }
 }

@@ -1,5 +1,5 @@
 import { expect, test } from "vitest"
-import { Ref, ref } from "./ref"
+import { ref } from "./ref"
 
 test("ref", () => {
     let a = ref(1) 

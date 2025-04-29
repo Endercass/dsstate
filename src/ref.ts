@@ -1,8 +1,8 @@
 import { SUBSCRIBERS, REF } from "./consts.js"
 
-
 export interface Ref<T, U = T> {
-    get val(): T
+    // Type as readonly to prevent direct mutation without properly updating
+    get val(): Readonly<T>
     set val(v: MaybeRef<T, U> | [Ref<U, any>, RefModifier<T, U>])
     [SUBSCRIBERS]: ((v: T) => void)[]
     [REF]: 1
@@ -28,10 +28,10 @@ export function ref<T, U = T>(base: T | Ref<U, any>, modifier?: (v: U) => T): Re
     }
     
     _ref = {
-        get val(): T {
-            return _val
+        get val(): Readonly<T> {
+            return Object.freeze(_val)
         },
-        set val(value: MaybeRef<T, U> | [Ref<U, any>, RefModifier<T, U>]) {
+        set val(value: MaybeRef<T, U> | [Ref<U, any>, RefModifier<T, U> | undefined]) {
             if (value !== _val) {
                 activeBases.length = 0
                 if (isRef(value)) {
@@ -40,7 +40,9 @@ export function ref<T, U = T>(base: T | Ref<U, any>, modifier?: (v: U) => T): Re
                         if (activeBases.includes(value))
                             assign(v)
                     })
-                } else if (Array.isArray(value)) {
+                } else if (Array.isArray(value) && isRef(value[0]) && (
+                    value.length === 1 as number || (value.length === 2 && typeof value[1] === 'function')
+                )) {
                     modifier = value[1]
                     activeBases.push(value[0])
                     watch(value[0], (v) => {
